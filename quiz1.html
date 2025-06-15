@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded shadow w-full max-w-xl">
+    <h1 class="text-2xl font-bold text-center mb-6">Quiz Game</h1>
+    <div id="quiz-container">
+      <!-- Question and options will go here -->
+    </div>
+    <div id="result" class="text-center mt-4 font-semibold"></div>
+    <button id="next-btn" class="hidden mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded">Next Question</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What is the capital of France?",
+        options: ["Berlin", "Madrid", "Paris", "Lisbon"],
+        answer: "Paris"
+      },
+      {
+        question: "Who wrote 'Romeo and Juliet'?",
+        options: ["Shakespeare", "Dante", "Homer", "Tolstoy"],
+        answer: "Shakespeare"
+      },
+      {
+        question: "What is the largest planet in our Solar System?",
+        options: ["Earth", "Mars", "Jupiter", "Venus"],
+        answer: "Jupiter"
+      },
+      {
+        question: "Which element has the chemical symbol O?",
+        options: ["Gold", "Oxygen", "Silver", "Iron"],
+        answer: "Oxygen"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const quizContainer = document.getElementById("quiz-container");
+    const result = document.getElementById("result");
+    const nextBtn = document.getElementById("next-btn");
+
+    function loadQuestion() {
+      const q = quizData[currentQuestion];
+      quizContainer.innerHTML = `
+        <p class="text-lg font-semibold mb-4">${q.question}</p>
+        <div>
+          ${q.options.map((opt, index) => `
+            <button class="option-btn block w-full text-left bg-gray-200 p-2 rounded my-2 hover:bg-gray-300" data-answer="${opt}">${index + 1}. ${opt}</button>
+          `).join('')}
+        </div>
+      `;
+      nextBtn.classList.add("hidden");
+      result.textContent = "";
+
+      document.querySelectorAll(".option-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const selected = btn.getAttribute("data-answer");
+          if (selected === q.answer) {
+            result.textContent = "Correct! ✅";
+            score++;
+          } else {
+            result.textContent = `Wrong ❌ Correct answer: ${q.answer}`;
+          }
+          document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);
+          nextBtn.classList.remove("hidden");
+        });
+      });
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        quizContainer.innerHTML = `<p class='text-xl font-bold text-center'>Game Over! You scored ${score} out of ${quizData.length}.</p>`;
+        nextBtn.classList.add("hidden");
+      }
+    });
+
+    // Initialize first question
+    loadQuestion();
+  </script>
+</body>
+</html>
